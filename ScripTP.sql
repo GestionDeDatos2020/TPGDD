@@ -3,24 +3,29 @@ GO
 
 ------------------------------------------------------DROPS
 /*	TABLAS
+BEGIN TRANSACTION
+	
+	DROP TABLE [COVID_20].[FACTURA] 
+	DROP TABLE [COVID_20].[SUCURSAL] 
+	DROP TABLE [COVID_20].[CLIENTE]
 
-DROP TABLE [COVID_20].[SUCURSAL] 
-DROP TABLE [COVID_20].[VUELO] 
-DROP TABLE [COVID_20].[AVION] 
-DROP TABLE [COVID_20].[CIUDAD] 
-DROP TABLE [COVID_20].[ESTADIA] 
-DROP TABLE [COVID_20].[FACTURA] 
-DROP TABLE [COVID_20].[COMPRA] 
-DROP TABLE [COVID_20].[EMPRESA] 
-DROP TABLE [COVID_20].[TIPO_HABITACION] 
-DROP TABLE [COVID_20].[HABITACION] 
-DROP TABLE [COVID_20].[CLIENTE] 
-DROP TABLE [COVID_20].[PASAJE] 
-DROP TABLE [COVID_20].[BUTACA] 
-DROP TABLE [COVID_20].[RUTA_AEREA] 
-DROP TABLE [COVID_20].[TIPO_BUTACA] 
-DROP TABLE [COVID_20].[HOTEL] 
+	DROP TABLE [COVID_20].[PASAJE]
+	DROP TABLE [COVID_20].[VUELO]
+	DROP TABLE [COVID_20].[BUTACA]
+	DROP TABLE [COVID_20].[TIPO_BUTACA] 
+	DROP TABLE [COVID_20].[AVION] 
+	DROP TABLE [COVID_20].[RUTA_AEREA]     
+	DROP TABLE [COVID_20].[CIUDAD] 
+		 
+	DROP TABLE [COVID_20].[ESTADIA] 
+	DROP TABLE [COVID_20].[HABITACION] 
+	DROP TABLE [COVID_20].[TIPO_HABITACION]
+	DROP TABLE [COVID_20].[HOTEL] 
+	
+	DROP TABLE [COVID_20].[COMPRA]
+	DROP TABLE [COVID_20].[EMPRESA]
 
+COMMIT TRANSACTION
 */
 
 ------------------------------------------------------CREAR SCHEMA
@@ -31,7 +36,7 @@ DROP TABLE [COVID_20].[HOTEL]
 
 ------------------------------------------------------CREAR TABLES
 CREATE TABLE [COVID_20].[SUCURSAL] (
-  [Sucursal_ID] bigint not null,
+  [Sucursal_ID] bigint identity(1,1) not null,
   [Sucursal_Direccion] varchar(100),
   [Sucursal_Mail] varchar(100),
   [Sucursal_Telefono] int
@@ -72,7 +77,7 @@ CREATE TABLE [COVID_20].[ESTADIA] (
 );
  
 CREATE TABLE [COVID_20].[FACTURA] (
-  [Factura_Numero] bigint not null,
+  [Factura_NRO] bigint not null,
   [Factura_Fecha] datetime,
   [Factura_Importe] numeric(10,2),
   [Pasaje_ID] bigint,
@@ -90,7 +95,7 @@ CREATE TABLE [COVID_20].[COMPRA] (
 
 
 CREATE TABLE [COVID_20].[EMPRESA] (
-  [Empresa_ID] int not null,
+  [Empresa_ID] int identity(1,1) not null,
   [Empresa_RS] varchar(50)
 );
 
@@ -101,7 +106,7 @@ CREATE TABLE [COVID_20].[TIPO_HABITACION] (
 
 CREATE TABLE [COVID_20].[HABITACION] (
   [Habitacion_ID] int not null,
-  [Habitacion_Nro] int,
+  [Habitacion_NRO] int,
   [Habitacion_Piso] int,
   [Habitacion_Frente] char(1),
   [Hotel_ID] int,
@@ -110,6 +115,7 @@ CREATE TABLE [COVID_20].[HABITACION] (
 
 
 CREATE TABLE [COVID_20].[CLIENTE] (
+  [Cliente_ID] bigint identity(1,1) not null,
   [Cliente_DNI] bigint not null,
   [Cliente_Nombre] varchar(50),
   [Cliente_Apellido] varchar(50),
@@ -130,7 +136,7 @@ CREATE TABLE [COVID_20].[PASAJE] (
 
 CREATE TABLE [COVID_20].[BUTACA] (
   [Butaca_ID] int not null,
-  [Butaca_Nro] int,
+  [Butaca_NRO] int,
   [Avion_ID] char(12),
   [TButaca_ID] int
 );
@@ -151,7 +157,7 @@ CREATE TABLE [COVID_20].[TIPO_BUTACA] (
 CREATE TABLE [COVID_20].[HOTEL] (
   [Hotel_ID] int not null,
   [Hotel_Calle] varchar(50),
-  [Hotel_Nro] int,
+  [Hotel_NRO] int,
   [Hotel_Estrellas] int
 );
 
@@ -170,7 +176,7 @@ BEGIN TRANSACTION
 	ALTER TABLE [COVID_20].[RUTA_AEREA]ADD CONSTRAINT PK_RutaAerea PRIMARY KEY (Ruta_ID)
 	ALTER TABLE [COVID_20].[BUTACA]ADD CONSTRAINT PK_Butaca PRIMARY KEY (Butaca_ID)
 	ALTER TABLE [COVID_20].[PASAJE]ADD CONSTRAINT PK_Pasaje PRIMARY KEY (Pasaje_ID)
-	ALTER TABLE [COVID_20].[CLIENTE]ADD CONSTRAINT PK_Cliente PRIMARY KEY (Cliente_DNI)
+	ALTER TABLE [COVID_20].[CLIENTE]ADD CONSTRAINT PK_Cliente PRIMARY KEY (Cliente_ID)
 	ALTER TABLE [COVID_20].[HABITACION]ADD CONSTRAINT PK_Habitacion PRIMARY KEY (Habitacion_ID)
 	ALTER TABLE [COVID_20].[TIPO_HABITACION]ADD CONSTRAINT PK_TipoHabitacion PRIMARY KEY (THabitacion_ID)
 	ALTER TABLE [COVID_20].[EMPRESA]ADD CONSTRAINT PK_Empresa PRIMARY KEY (Empresa_ID)
@@ -221,8 +227,8 @@ BEGIN TRANSACTION
 		ADD CONSTRAINT FK_Factura_EstadiaID 
 		FOREIGN KEY (Estadia_ID) REFERENCES COVID_20.ESTADIA(Estadia_ID)
 	ALTER TABLE [COVID_20].[FACTURA] 
-		ADD CONSTRAINT FK_Factura_ClienteDNI 
-		FOREIGN KEY (Cliente_DNI) REFERENCES COVID_20.CLIENTE(Cliente_DNI)
+		ADD CONSTRAINT FK_Factura_ClienteID 
+		FOREIGN KEY (Cliente_ID) REFERENCES COVID_20.CLIENTE(Cliente_ID)
 	ALTER TABLE [COVID_20].[FACTURA] 
 		ADD CONSTRAINT FK_Factura_SucursalID 
 		FOREIGN KEY (Sucursal_ID) REFERENCES COVID_20.SUCURSAL(Sucursal_ID)
