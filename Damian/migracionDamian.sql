@@ -12,13 +12,13 @@ DROP TABLE [COVID_20].[ESTADIA]
 DROP TABLE [COVID_20].[FACTURA] 
 DROP TABLE [COVID_20].[COMPRA] 
 DROP TABLE [COVID_20].[EMPRESA] 
-DROP TABLE [COVID_20].[TIPO HABITACION] 
+DROP TABLE [COVID_20].[TIPO_HABITACION] 
 DROP TABLE [COVID_20].[HABITACION] 
 DROP TABLE [COVID_20].[CLIENTE] 
 DROP TABLE [COVID_20].[PASAJE] 
 DROP TABLE [COVID_20].[BUTACA] 
-DROP TABLE [COVID_20].[RUTA AEREA] 
-DROP TABLE [COVID_20].[TIPO BUTACA] 
+DROP TABLE [COVID_20].[RUTA_AEREA] 
+DROP TABLE [COVID_20].[TIPO_BUTACA] 
 DROP TABLE [COVID_20].[HOTEL] 
 
 */
@@ -39,16 +39,16 @@ CREATE TABLE [COVID_20].[SUCURSAL] (
 
 
 CREATE TABLE [COVID_20].[VUELO] (
-  [Vuelo_Codigo] bigint not null,
+  [Vuelo_ID] bigint not null,
   [Vuelo_Fecha_Salida] datetime,
   [Vuelo_Fecha_Llegada] datetime,
-  [Ruta_Cod] int,
-  [Avion_ID] varchar(30)
+  [Ruta_ID] int,
+  [Avion_ID] char(12)
 );
 
 
 CREATE TABLE [COVID_20].[AVION] (
-  [Avion_ID] varchar(30) not null,
+  [Avion_ID] char(12) not null,
   [Avion_Modelo] varchar(30)
 );
 
@@ -59,10 +59,10 @@ CREATE TABLE [COVID_20].[CIUDAD] (
 );
 
 CREATE TABLE [COVID_20].[ESTADIA] (
-  [Estadia_Cod] bigint not null,
+  [Estadia_ID] bigint not null,
   [Estadia_Costo] numeric(10,2),
   [Estadia_Precio] numeric(10,2),
-  [Compra_Numero] bigint,
+  [Compra_NRO] bigint,
   [Estadia_Inicio] datetime,
   [Estadia_Noches] int,
   [Estadia_Checkin] datetime,
@@ -75,10 +75,10 @@ CREATE TABLE [COVID_20].[FACTURA] (
   [Factura_Numero] bigint not null,
   [Factura_Fecha] datetime,
   [Factura_Importe] numeric(10,2),
-  [Pasaje_Cod] bigint,
-  [Estadia_Cod] bigint,
+  [Pasaje_ID] bigint,
+  [Estadia_ID] bigint,
   [Cliente_DNI] bigint,
-  [Sucursal_Cod] bigint
+  [Sucursal_ID] bigint
 );
 
 
@@ -94,8 +94,8 @@ CREATE TABLE [COVID_20].[EMPRESA] (
   [Empresa_RS] varchar(50)
 );
 
-CREATE TABLE [COVID_20].[TIPO HABITACION] (
-  [THabitacion_Cod] int not null,
+CREATE TABLE [COVID_20].[TIPO_HABITACION] (
+  [THabitacion_ID] int not null,
   [THabitacion_Descripcion] varchar(50)
 );
 
@@ -105,7 +105,7 @@ CREATE TABLE [COVID_20].[HABITACION] (
   [Habitacion_Piso] int,
   [Habitacion_Frente] char(1),
   [Hotel_ID] int,
-  [THabitacion_Cod] int
+  [THabitacion_ID] int
 );
 
 
@@ -119,11 +119,11 @@ CREATE TABLE [COVID_20].[CLIENTE] (
 );
 
 CREATE TABLE [COVID_20].[PASAJE] (
-  [Pasaje_Cod] bigint not null,
+  [Pasaje_ID] bigint not null,
   [Pasaje_Costo] numeric(10,2),
   [Pasaje_Precio] numeric(10,2),
-  [Compra_Numero] bigint,
-  [Vuelo_Codigo] bigint,
+  [Compra_NRO] bigint,
+  [Vuelo_ID] bigint,
   [Butaca_ID] int
 );
 
@@ -131,19 +131,19 @@ CREATE TABLE [COVID_20].[PASAJE] (
 CREATE TABLE [COVID_20].[BUTACA] (
   [Butaca_ID] int not null,
   [Butaca_Nro] int,
-  [Vuelo_Codigo] bigint,
+  [Avion_ID] char(12),
   [TButaca_ID] int
 );
 
 
-CREATE TABLE [COVID_20].[RUTA AEREA] (
-  [Ruta_Codigo] int not null,
-  [Ciudad_ID_Origen] varchar(50),
-  [Ciudad_ID_Destino] varchar(50)
+CREATE TABLE [COVID_20].[RUTA_AEREA] (
+  [Ruta_ID] int not null,
+  [Ciudad_ID_Origen] int,
+  [Ciudad_ID_Destino] int
 );
 
 
-CREATE TABLE [COVID_20].[TIPO BUTACA] (
+CREATE TABLE [COVID_20].[TIPO_BUTACA] (
   [TButaca_ID] int not null,
   [TButaca_Descripcion] varchar(50)
 );
@@ -159,71 +159,89 @@ CREATE TABLE [COVID_20].[HOTEL] (
 ------------------------------------------------------CREAR PK
 BEGIN TRANSACTION
 	ALTER TABLE [COVID_20].[SUCURSAL]ADD CONSTRAINT PK_Sucursal PRIMARY KEY (Sucursal_ID)
-	ALTER TABLE [COVID_20].[VUELO]ADD CONSTRAINT PK_Vuelo PRIMARY KEY (Vuelo_Codigo)
+	ALTER TABLE [COVID_20].[VUELO]ADD CONSTRAINT PK_Vuelo PRIMARY KEY (Vuelo_ID)
 	ALTER TABLE [COVID_20].[AVION]ADD CONSTRAINT PK_Avion PRIMARY KEY (Avion_ID)
 	ALTER TABLE [COVID_20].[CIUDAD]ADD CONSTRAINT PK_Ciudad PRIMARY KEY (Ciudad_ID)
-	ALTER TABLE [COVID_20].[ESTADIA]ADD CONSTRAINT PK_Estadia PRIMARY KEY (Estadia_Cod)
+	ALTER TABLE [COVID_20].[ESTADIA]ADD CONSTRAINT PK_Estadia PRIMARY KEY (Estadia_ID)
 	ALTER TABLE [COVID_20].[FACTURA]ADD CONSTRAINT PK_Factura PRIMARY KEY (Factura_Numero)
 	ALTER TABLE [COVID_20].[COMPRA]ADD CONSTRAINT PK_Compra PRIMARY KEY (Compra_NRO)
 	ALTER TABLE [COVID_20].[HOTEL]ADD CONSTRAINT PK_Hotel PRIMARY KEY (Hotel_ID)
-	ALTER TABLE [COVID_20].[TIPO BUTACA]ADD CONSTRAINT PK_TipoButaca PRIMARY KEY (TButaca_ID)
-	ALTER TABLE [COVID_20].[RUTA AEREA]ADD CONSTRAINT PK_RutaAerea PRIMARY KEY (Ruta_Codigo)
+	ALTER TABLE [COVID_20].[TIPO_BUTACA]ADD CONSTRAINT PK_TipoButaca PRIMARY KEY (TButaca_ID)
+	ALTER TABLE [COVID_20].[RUTA_AEREA]ADD CONSTRAINT PK_RutaAerea PRIMARY KEY (Ruta_ID)
 	ALTER TABLE [COVID_20].[BUTACA]ADD CONSTRAINT PK_Butaca PRIMARY KEY (Butaca_ID)
-	ALTER TABLE [COVID_20].[PASAJE]ADD CONSTRAINT PK_Pasaje PRIMARY KEY (Pasaje_Cod)
+	ALTER TABLE [COVID_20].[PASAJE]ADD CONSTRAINT PK_Pasaje PRIMARY KEY (Pasaje_ID)
 	ALTER TABLE [COVID_20].[CLIENTE]ADD CONSTRAINT PK_Cliente PRIMARY KEY (Cliente_DNI)
 	ALTER TABLE [COVID_20].[HABITACION]ADD CONSTRAINT PK_Habitacion PRIMARY KEY (Habitacion_ID)
-	ALTER TABLE [COVID_20].[TIPO HABITACION]ADD CONSTRAINT PK_TipoHabitacion PRIMARY KEY (THabitacion_Cod)
+	ALTER TABLE [COVID_20].[TIPO_HABITACION]ADD CONSTRAINT PK_TipoHabitacion PRIMARY KEY (THabitacion_ID)
 	ALTER TABLE [COVID_20].[EMPRESA]ADD CONSTRAINT PK_Empresa PRIMARY KEY (Empresa_ID)
 COMMIT TRANSACTION
 ------------------------------------------------------CREAR FK
---Ejemplo--ALTER TABLE OrdersADD CONSTRAINT FK_PersonOrderFOREIGN KEY (PersonID) REFERENCES Persons(PersonID)
 
-Ruta aerea 
-	[Ciudad_ID_Origen] 
-	[Ciudad_ID_Destino]
-ALTER TABLE [COVID_20].[RUTA AEREA] ADD CONSTRAINT FK_RutaAerea_
-ALTER TABLE [COVID_20].[RUTA AEREA] ADD CONSTRAINT FK_RutaAerea_
-Butaca 
-	[Vuelo_Codigo] 
-	[TButaca_ID] 
-ALTER TABLE [COVID_20].[BUTACA] ADD CONSTRAINT FK_Butaca_
-ALTER TABLE [COVID_20].[BUTACA] ADD CONSTRAINT FK_Butaca_
-
-Pasaje 
-	[Compra_Numero] 
-	[Vuelo_Codigo] 
-	[Butaca_ID] 
-ALTER TABLE [COVID_20].[PASAJE] ADD CONSTRAINT FK_Pasaje_
-ALTER TABLE [COVID_20].[PASAJE] ADD CONSTRAINT FK_Pasaje_
-ALTER TABLE [COVID_20].[PASAJE] ADD CONSTRAINT FK_Pasaje_
-Habitacion 
-	[Hotel_ID] 
-	[THabitacion_Cod] 
-ALTER TABLE [COVID_20].[HABITACION] ADD CONSTRAINT FK_Habitacion_
-ALTER TABLE [COVID_20].[HABITACION] ADD CONSTRAINT FK_Habitacion_
-Compra 
-	[Empresa_ID]
-ALTER TABLE [COVID_20].[COMPRA] ADD CONSTRAINT FK_Compra_
-Factura 
-	[Pasaje_Cod] 
-	[Estadia_Cod]
-	[Cliente_DNI] 
-	[Sucursal_Cod] 
-ALTER TABLE [COVID_20].[FACTURA] ADD CONSTRAINT FK_Factura_
-ALTER TABLE [COVID_20].[FACTURA] ADD CONSTRAINT FK_Factura_
-ALTER TABLE [COVID_20].[FACTURA] ADD CONSTRAINT FK_Factura_
-ALTER TABLE [COVID_20].[FACTURA] ADD CONSTRAINT FK_Factura_
-Estadia	
-	[Compra_Numero] 
-	[Habitacion_ID] 
-	[Hotel_ID]
-ALTER TABLE [COVID_20].[ESTADIA] ADD CONSTRAINT FK_Estadia_
-ALTER TABLE [COVID_20].[ESTADIA] ADD CONSTRAINT FK_Estadia_
-ALTER TABLE [COVID_20].[ESTADIA] ADD CONSTRAINT FK_Estadia_
-vuelo
-	[Ruta_Cod] 
-	[Avion_ID]
-ALTER TABLE [COVID_20].[VUELO] ADD CONSTRAINT FK_Vuelo_
-ALTER TABLE [COVID_20].[VUELO] ADD CONSTRAINT FK_Vuelo_
-
+BEGIN TRANSACTION
+	--Ruta AEREA
+	ALTER TABLE [COVID_20].[RUTA_AEREA] 
+		ADD CONSTRAINT FK_RutaAerea_CiudadOrigen 
+		FOREIGN KEY (Ciudad_ID_Origen) REFERENCES COVID_20.CIUDAD(Ciudad_ID)
+	ALTER TABLE [COVID_20].[RUTA_AEREA] 
+		ADD CONSTRAINT FK_RutaAerea_CiudadDestino
+		FOREIGN KEY (Ciudad_ID_Destino) REFERENCES COVID_20.CIUDAD(Ciudad_ID)
+	--Butaca
+	ALTER TABLE [COVID_20].[BUTACA] 
+		ADD CONSTRAINT FK_Butaca_AvionID
+		FOREIGN KEY (Avion_ID) REFERENCES COVID_20.AVION(Avion_ID)
+	ALTER TABLE [COVID_20].[BUTACA] 
+		ADD CONSTRAINT FK_Butaca_TButaca_ID
+		FOREIGN KEY (TButaca_ID) REFERENCES COVID_20.TIPO_BUTACA(TButaca_ID)
+	--Pasaje
+	ALTER TABLE [COVID_20].[PASAJE] 
+		ADD CONSTRAINT FK_Pasaje_CompraNumero
+		FOREIGN KEY (Compra_NRO) REFERENCES COVID_20.COMPRA(Compra_NRO)
+	ALTER TABLE [COVID_20].[PASAJE] 
+		ADD CONSTRAINT FK_Pasaje_VueloID
+		FOREIGN KEY (Vuelo_ID) REFERENCES COVID_20.VUELO(Vuelo_ID)
+	ALTER TABLE [COVID_20].[PASAJE] 
+		ADD CONSTRAINT FK_Pasaje_ButacaID
+		FOREIGN KEY (Butaca_ID) REFERENCES COVID_20.BUTACA(Butaca_ID)
+	--Habitacion
+	ALTER TABLE [COVID_20].[HABITACION] 
+		ADD CONSTRAINT FK_Habitacion_HotelID
+		FOREIGN KEY (Hotel_ID) REFERENCES COVID_20.HOTEL(Hotel_ID)
+	ALTER TABLE [COVID_20].[HABITACION] 
+		ADD CONSTRAINT FK_Habitacion_ThabitacionID
+		FOREIGN KEY (THabitacion_ID) REFERENCES COVID_20.TIPO_HABITACION(THabitacion_ID)
+	--Compra
+	ALTER TABLE [COVID_20].[COMPRA] 
+		ADD CONSTRAINT FK_Compra_EmpresaID
+		FOREIGN KEY (Empresa_ID) REFERENCES COVID_20.EMPRESA(Empresa_ID)
+	--Factura
+	ALTER TABLE [COVID_20].[FACTURA] 
+		ADD CONSTRAINT FK_Factura_PasajeID 
+		FOREIGN KEY (Pasaje_ID) REFERENCES COVID_20.PASAJE(Pasaje_ID)
+	ALTER TABLE [COVID_20].[FACTURA] 
+		ADD CONSTRAINT FK_Factura_EstadiaID 
+		FOREIGN KEY (Estadia_ID) REFERENCES COVID_20.ESTADIA(Estadia_ID)
+	ALTER TABLE [COVID_20].[FACTURA] 
+		ADD CONSTRAINT FK_Factura_ClienteDNI 
+		FOREIGN KEY (Cliente_DNI) REFERENCES COVID_20.CLIENTE(Cliente_DNI)
+	ALTER TABLE [COVID_20].[FACTURA] 
+		ADD CONSTRAINT FK_Factura_SucursalID 
+		FOREIGN KEY (Sucursal_ID) REFERENCES COVID_20.SUCURSAL(Sucursal_ID)
+	--Estadia
+	ALTER TABLE [COVID_20].[ESTADIA] 
+		ADD CONSTRAINT FK_Estadia_CompraNumero 
+		FOREIGN KEY (Compra_NRO) REFERENCES COVID_20.COMPRA(Compra_NRO)
+	ALTER TABLE [COVID_20].[ESTADIA] 
+		ADD CONSTRAINT FK_Estadia_HabitacionID  
+		FOREIGN KEY (Habitacion_ID) REFERENCES COVID_20.HABITACION(Habitacion_ID)
+	ALTER TABLE [COVID_20].[ESTADIA] 
+		ADD CONSTRAINT FK_Estadia_HotelID 
+		FOREIGN KEY (Hotel_ID) REFERENCES COVID_20.HOTEL(Hotel_ID)
+	--Vuelo
+	ALTER TABLE [COVID_20].[VUELO] 
+		ADD CONSTRAINT FK_Vuelo_RutaID 
+		FOREIGN KEY (Ruta_ID) REFERENCES COVID_20.RUTA_AEREA(Ruta_ID)
+	ALTER TABLE [COVID_20].[VUELO] 
+		ADD CONSTRAINT FK_Vuelo_AvionID 
+		FOREIGN KEY (Avion_ID) REFERENCES COVID_20.AVION(Avion_ID)
+COMMIT TRANSACTION
  
