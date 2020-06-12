@@ -160,7 +160,6 @@ CREATE TABLE [COVID_20].[PASAJE] (
   [Butaca_ID] int  not null,
   [Compra_NRO] [decimal](18, 0) NOT NULL,
   [Pasaje_Costo] [decimal](18, 2) NOT NULL,
-  [Pasaje_Fecha_Compra] [datetime2](3) ,
   [Pasaje_Precio] numeric(10,2) ,
 );
 
