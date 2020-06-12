@@ -1,4 +1,4 @@
-
+﻿
 ## AVION
 * AVION IDENTIFICADOR. Se mantiene la definición en la tabla maestra,  [nvarchar](50), pues entendemos que como máximo puede existir un registro con hasta 50 caracteres.
   
@@ -20,3 +20,7 @@ Identifica el numero de butaca en un determinado avion, distinguiendo el tipo de
 ## PASAJE
 Existen pasajes que no se vendieron Pasaje_Fecha_Compra = NULL
 * Campos obligatorios Compra_Nro, Vuelo_ID, Butaca_ID, Compra_NRO, Pasaje_costo
+
+## ClIENTES
+Existen clientes con el mismo DNI, se incluye un campo Cliente_ID para solucionar
+el problema y para que funcione como PK

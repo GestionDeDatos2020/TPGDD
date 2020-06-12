@@ -1,3 +1,5 @@
+------------------------------------------------FACTURAS
+
 USE [GD1C2020]
 GO
 
@@ -29,8 +31,8 @@ COMMIT TRANSACTION
 */
 
 ------------------------------------------------------CREAR SCHEMA
---CREATE SCHEMA [COVID_20]
---GO
+CREATE SCHEMA [COVID_20]
+GO
 
 
 
@@ -82,7 +84,7 @@ CREATE TABLE [COVID_20].[FACTURA] (
   [Factura_Importe] numeric(10,2),
   [Pasaje_ID] bigint,
   [Estadia_ID] bigint,
-  [Cliente_DNI] bigint,
+  [Cliente_ID] bigint,
   [Sucursal_ID] bigint
 );
 
@@ -169,7 +171,7 @@ BEGIN TRANSACTION
 	ALTER TABLE [COVID_20].[AVION]ADD CONSTRAINT PK_Avion PRIMARY KEY (Avion_ID)
 	ALTER TABLE [COVID_20].[CIUDAD]ADD CONSTRAINT PK_Ciudad PRIMARY KEY (Ciudad_ID)
 	ALTER TABLE [COVID_20].[ESTADIA]ADD CONSTRAINT PK_Estadia PRIMARY KEY (Estadia_ID)
-	ALTER TABLE [COVID_20].[FACTURA]ADD CONSTRAINT PK_Factura PRIMARY KEY (Factura_Numero)
+	ALTER TABLE [COVID_20].[FACTURA]ADD CONSTRAINT PK_Factura PRIMARY KEY (Factura_NRO)
 	ALTER TABLE [COVID_20].[COMPRA]ADD CONSTRAINT PK_Compra PRIMARY KEY (Compra_NRO)
 	ALTER TABLE [COVID_20].[HOTEL]ADD CONSTRAINT PK_Hotel PRIMARY KEY (Hotel_ID)
 	ALTER TABLE [COVID_20].[TIPO_BUTACA]ADD CONSTRAINT PK_TipoButaca PRIMARY KEY (TButaca_ID)
@@ -254,7 +256,6 @@ COMMIT TRANSACTION
 
 --------------------------------------------MIGRACIONES
 
-
 ----------------------EMPRESA
 --SELECT * FROM COVID_20.EMPRESA
 INSERT INTO COVID_20.EMPRESA (Empresa_RS) 
@@ -276,5 +277,39 @@ INSERT INTO COVID_20.CLIENTE (Cliente_DNI, Cliente_Nombre, Cliente_Apellido,
 		WHERE CLIENTE_DNI is not null
 
 ----------------------COMPRA
+--SELECT * FROM COVID_20.COMPRA
+INSERT INTO COVID_20.COMPRA (Compra_NRO, Compra_Fecha, Empresa_ID)
+	SELECT DISTINCT COMPRA_NUMERO,COMPRA_FECHA, Empresa_ID
+		FROM gd_esquema.Maestra
+		JOIN COVID_20.EMPRESA ON EMPRESA_RAZON_SOCIAL = Empresa_RS
+		WHERE FACTURA_NRO is null
+		order by 1
 ----------------------FACTURA
-
+--SEELCT * FROM COVID_20.FACTURA
+-- FACTURA ESTADIA
+INSERT INTO COVID_20.FACTURA (Factura_NRO, Factura_Fecha, Factura_Importe,
+							  Estadia_ID, Cliente_ID, Sucursal_ID)
+	SELECT FACTURA_NRO, FACTURA_FECHA, HABITACION_PRECIO, 
+		   ESTADIA_CODIGO, c.Cliente_ID, s.Sucursal_ID
+		FROM gd_esquema.Maestra m
+		JOIN COVID_20.CLIENTE c ON m.CLIENTE_DNI = c.Cliente_DNI AND
+									m.CLIENTE_APELLIDO = c.Cliente_Apellido
+		JOIN COVID_20.SUCURSAL s  ON m.SUCURSAL_DIR = s.Sucursal_Direccion AND
+									 m.SUCURSAL_MAIL = s.Sucursal_Mail AND
+									 m.SUCURSAL_TELEFONO = s.Sucursal_Telefono
+		where FACTURA_NRO is not null AND 
+			  ESTADIA_CODIGO is not null
+--FACTURA PASAJE		  
+INSERT INTO COVID_20.FACTURA (Factura_NRO, Factura_Fecha, Factura_Importe,
+							  Pasaje_ID, Cliente_ID, Sucursal_ID)
+	SELECT FACTURA_NRO, FACTURA_FECHA, PASAJE_PRECIO, 
+		   PASAJE_CODIGO, c.Cliente_ID, s.Sucursal_ID
+		FROM gd_esquema.Maestra m
+		JOIN COVID_20.CLIENTE c ON m.CLIENTE_DNI = c.Cliente_DNI AND
+									m.CLIENTE_APELLIDO = c.Cliente_Apellido
+		JOIN COVID_20.SUCURSAL s  ON m.SUCURSAL_DIR = s.Sucursal_Direccion AND
+									 m.SUCURSAL_MAIL = s.Sucursal_Mail AND
+									 m.SUCURSAL_TELEFONO = s.Sucursal_Telefono
+	where FACTURA_NRO is not null AND 
+		  PASAJE_CODIGO is not null 
+	order by 1 desc

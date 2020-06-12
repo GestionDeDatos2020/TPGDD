@@ -1,4 +1,4 @@
-
+------------------------------------------------------PASAJES
 USE GD1C2020;
 -- TIPO_BUTACA
 INSERT INTO COVID_20.TIPO_BUTACA (TButaca_Descripcion)
@@ -56,5 +56,6 @@ JOIN COVID_20.BUTACA ON  Butaca_NRO = BUTACA_NUMERO
             AND BUTACA.TButaca_ID  = TIPO_BUTACA.TButaca_ID
 
 --
+
 
 
