@@ -1,0 +1,1 @@
+sqlcmd -S MI_INSTANCIA_SQL_SERVER  -i ScripTP.sql  -o resultado_output.txt
