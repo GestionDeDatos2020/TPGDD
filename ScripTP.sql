@@ -282,7 +282,7 @@ INSERT INTO COVID_20.CIUDAD (Ciudad_Nombre)
 	UNION
 	SELECT distinct RUTA_AEREA_CIU_ORIG 
 		FROM gd_esquema.Maestra 
-		WHERE RUTA_AEREA_CIU_DEST is not null
+		WHERE RUTA_AEREA_CIU_ORIG is not null
 		order by 1
 ---------------------------------------------- RUTA AEREA
 INSERT INTO COVID_20.RUTA_AEREA (Ruta_Codigo,Ruta_Ciudad_Origen,Ruta_Ciudad_Destino)
