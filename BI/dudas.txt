@@ -60,3 +60,10 @@ vendidas, cantidad de pasajes aéreos vendidos, ganancias realizada sobre la ven
 pasajes o estadías,
 
 Patrones de interes
+
+---
+No pueden tener dimensiones en null porque si no hay hechos para esa dimensión no se deben cargar ni tampoco con 0 
+
+Las consultas efectivamente se hacen sobre la tabla de hechos 
+
+Enrique 

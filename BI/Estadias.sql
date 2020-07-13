@@ -1,17 +1,8 @@
 USE GD1C2020;
-/*INSERT INTO Fact_Table_Costos (Anio,Mes,Producto_ID,Proveedor_ID,Sucursal_ID,Precio_Promedio_Compra,Precio_Promedio_Venta,Cantidad_Comprada,Cantidad_Vendida,Ganancia)
+/*INSERT INTO Fact_Table_Costos (Anio,Mes,Producto_ID,Proveedor_ID,Precio_Promedio_Compra,Precio_Promedio_Venta,Cantidad_Comprada,Cantidad_Vendida,Ganancia)
 */
-SELECT YEAR(Compra_Fecha) as Anio, MONTH(Compra_Fecha)AS Mes,2 as fk_producto , C.Empresa_ID,FAC.Sucursal_ID,
-(
-    SELECT AVG(Estadia_Costo)
-    FROM COVID_20.COMPRA C1
-    JOIN COVID_20.ESTADIA E1 ON E1.Compra_NRO = C1.Compra_NRO
-    JOIN COVID_20.FACTURA F ON F.Estadia_ID = E1.Estadia_ID
-    WHERE YEAR(C1.Compra_Fecha) = YEAR(C.Compra_Fecha)
-        AND MONTH(C1.Compra_Fecha) = MONTH(C.Compra_Fecha) 
-        AND F.Sucursal_ID = FAC.Sucursal_ID 
-        AND C1.Empresa_ID = C.Empresa_ID
-) AS Precio_Promedio_Compra,
+SELECT YEAR(Compra_Fecha) as Anio, MONTH(Compra_Fecha)AS Mes,2 as fk_producto , C.Empresa_ID,
+AVG(Estadia_Costo) Precio_Promedio_Compra, 
 (
     SELECT AVG(F.Factura_Importe)
     FROM COVID_20.COMPRA C1
@@ -19,19 +10,9 @@ SELECT YEAR(Compra_Fecha) as Anio, MONTH(Compra_Fecha)AS Mes,2 as fk_producto , 
     JOIN COVID_20.FACTURA F ON F.Estadia_ID = E1.Estadia_ID
     WHERE YEAR(C1.Compra_Fecha) = YEAR(C.Compra_Fecha)
         AND MONTH(C1.Compra_Fecha) = MONTH(C.Compra_Fecha) 
-        AND F.Sucursal_ID = FAC.Sucursal_ID 
         AND C1.Empresa_ID = C.Empresa_ID
 ) AS Precio_Promedio_Venta,
-(
-    SELECT COUNT(DISTINCT E1.Estadia_ID)
-    FROM COVID_20.COMPRA C1
-    JOIN COVID_20.ESTADIA E1 ON E1.Compra_NRO = C1.Compra_NRO
-    JOIN COVID_20.FACTURA F ON F.Estadia_ID = E1.Estadia_ID
-    WHERE YEAR(C1.Compra_Fecha) = YEAR(C.Compra_Fecha)
-        AND MONTH(C1.Compra_Fecha) = MONTH(C.Compra_Fecha) 
-        AND F.Sucursal_ID = FAC.Sucursal_ID 
-        AND C1.Empresa_ID = C.Empresa_ID
-) AS Cantidad_Comprada,
+COUNT(DISTINCT ES.Estadia_ID) Cantidad_Comprada,
 (
     SELECT COUNT(DISTINCT F.Estadia_ID)
     FROM COVID_20.COMPRA C1
@@ -39,7 +20,6 @@ SELECT YEAR(Compra_Fecha) as Anio, MONTH(Compra_Fecha)AS Mes,2 as fk_producto , 
     JOIN COVID_20.FACTURA F ON F.Estadia_ID = E1.Estadia_ID
     WHERE YEAR(C1.Compra_Fecha) = YEAR(C.Compra_Fecha)
         AND MONTH(C1.Compra_Fecha) = MONTH(C.Compra_Fecha) 
-        AND F.Sucursal_ID = FAC.Sucursal_ID  
         AND C1.Empresa_ID = C.Empresa_ID
 ) AS Cantidad_Vendida,
 (
@@ -49,7 +29,6 @@ SELECT YEAR(Compra_Fecha) as Anio, MONTH(Compra_Fecha)AS Mes,2 as fk_producto , 
     JOIN COVID_20.FACTURA F ON F.Estadia_ID = E1.Estadia_ID
     WHERE YEAR(C1.Compra_Fecha) = YEAR(C.Compra_Fecha)
         AND MONTH(C1.Compra_Fecha) = MONTH(C.Compra_Fecha)
-        AND F.Sucursal_ID = FAC.Sucursal_ID  
         AND C1.Empresa_ID = C.Empresa_ID
 ) -(
     SELECT SUM(E1.Estadia_Costo)
@@ -58,12 +37,10 @@ SELECT YEAR(Compra_Fecha) as Anio, MONTH(Compra_Fecha)AS Mes,2 as fk_producto , 
     JOIN COVID_20.FACTURA F ON F.Estadia_ID = E1.Estadia_ID
     WHERE YEAR(C1.Compra_Fecha) = YEAR(C.Compra_Fecha)
         AND MONTH(C1.Compra_Fecha) = MONTH(C.Compra_Fecha) 
-        AND F.Sucursal_ID = FAC.Sucursal_ID    
         AND C1.Empresa_ID = C.Empresa_ID 
 )  as Ganancia
 FROM COVID_20.COMPRA C
 JOIN COVID_20.EMPRESA EM ON EM.Empresa_ID = C.Empresa_ID
 JOIN COVID_20.ESTADIA ES ON ES.Compra_NRO = C.Compra_NRO
-JOIN COVID_20.FACTURA FAC ON FAC.Estadia_ID = ES.Estadia_ID
-GROUP BY YEAR(Compra_Fecha)  , MONTH(Compra_Fecha),C.Empresa_ID, FAC.Sucursal_ID
+GROUP BY YEAR(Compra_Fecha)  , MONTH(Compra_Fecha),C.Empresa_ID
 ORDER BY 1, 2

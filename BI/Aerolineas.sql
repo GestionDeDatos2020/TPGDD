@@ -1,23 +1,17 @@
-/**
-anio , mes, aerolinea , tipo_pasaje , edad , ciudad
-aviones
-precio_promedio_compra
-compra
-precio_promedio_venta
-cantidad_vendida
-ganancia
-cantidad_de_vuelos
-cuales son las ciudades de origen donde mas se compraron
-cuales son las ciudades destinos mas vendidos
-cantidad de aviones
-p
+/*
+Aerolíneas más elegidas
+Fact Table Aerolíneas
+Dimensiones
+Anio
+Mes
+Aerolínea
+Tipo Pasaje
+Atributos
+Cantidad de aviones
 */
-
 USE GD1C2020;
 
-/*INSERT INTO Fact_Table_Costos (Anio,Mes,Producto_ID,Proveedor_ID,Precio_Promedio_Compra,Precio_Promedio_Venta,Cantidad_Comprada,Cantidad_Vendida,Ganancia)
-*/
-SELECT YEAR(Compra_Fecha) as Anio, MONTH(Compra_Fecha)AS Mes,1 as fk_producto , C.Empresa_ID,
+SELECT YEAR(Compra_Fecha) as Anio, MONTH(Compra_Fecha)AS Mes,1 as fk_producto , C.Empresa_ID, 
 AVG(Pasaje_Costo) Precio_Promedio_Compra,  
 (
     SELECT AVG(Factura_Importe)
