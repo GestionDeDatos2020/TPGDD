@@ -6,6 +6,7 @@ BEGIN TRANSACTION
 	DROP TABLE [COVID_20].[Dimencion_Clientes_Estadias]
 	DROP TABLE [COVID_20].[Dimencion_Empresa_Hotelera]
 	DROP TABLE [COVID_20].[Dimencion_Tipo_Habitacion]
+	DROP TABLE [COVID_20].[Fact_Table_Estadias]
 COMMIT TRANSACTION
 */
 ------------------------------------------------------CREACIONES DE TABLAS
@@ -30,7 +31,22 @@ CREATE TABLE [COVID_20].[Dimencion_Tipo_Habitacion](
 	THabitacion_Cantidad_Camas bigint
 )
 
+CREATE TABLE [COVID_20].[Fact_Table_Estadias](
+	Dim_Tiempo_Anio numeric(4) NOT NULL,
+	Dim_Tiempo_Mes numeric(2) NOT NULL,
+	Dim_Hotel_RS varchar(50) NOT NULL,
+	Dim_Clie_Edad int NOT NULL,
+	Dim_THabitacion_Tipo varchar(50) NOT NULL,
+	Fact_Precio_Promedio_Compra numeric(10,2),
+	Fact_Precio_Promedio_Venta numeric(10,2),
+	Fact_Cantidad_Vendida int,
+	Fact_Ganancia numeric(10,2),
+	Fact_Cantidad_Camas int,
+	Fact_Cantidad_Havitaciones int,
+)
+
 ------------------------------------------------------CREACION DE LAS CLAVES PRIMARIAS (PK)
+
 
 ALTER TABLE [COVID_20].[Dimencion_Tiempo]
 	ADD CONSTRAINT PK_BI_Tiempo PRIMARY KEY (Tiempo_Anio, Tiempo_Mes)
@@ -43,9 +59,28 @@ ALTER TABLE [COVID_20].[Dimencion_Empresa_Hotelera]
 
 ALTER TABLE [COVID_20].[Dimencion_Tipo_Habitacion]
 	ADD CONSTRAINT PK_BI_THabitacion PRIMARY KEY (THabitacion_Tipo)
+
+ALTER TABLE [COVID_20].[Fact_Table_Estadias]
+	ADD CONSTRAINT PK_BI_Fact_Estadias PRIMARY KEY (Dim_Tiempo_Anio,Dim_Tiempo_Mes, Dim_Hotel_RS, Dim_THabitacion_Tipo,Dim_Clie_Edad)
+
+
 ------------------------------------------------------CREACION DE LAS CLAVES FORANEAS (FK)
 
+ALTER TABLE [COVID_20].[Fact_Table_Estadias] 
+	ADD CONSTRAINT FK_BI_Dimencion_Tiempo_Anio
+	FOREIGN KEY (Dim_Tiempo_Anio,Dim_Tiempo_Mes) REFERENCES Covid_20.Dimencion_Tiempo(Tiempo_Anio,Tiempo_Mes)
 
+ALTER TABLE [COVID_20].[Fact_Table_Estadias] 
+	ADD CONSTRAINT FK_BI_Dimencion_Empresa_Hotelera
+	FOREIGN KEY (Dim_Hotel_RS) REFERENCES Covid_20.Dimencion_Empresa_Hotelera(Hotel_RS)
+
+ALTER TABLE [COVID_20].[Fact_Table_Estadias] 
+	ADD CONSTRAINT FK_BI_Dimencion_Tipo_Habitacion
+	FOREIGN KEY (Dim_THabitacion_Tipo) REFERENCES Covid_20.Dimencion_Tipo_Habitacion(THabitacion_Tipo)
+
+ALTER TABLE [COVID_20].[Fact_Table_Estadias] 
+	ADD CONSTRAINT FK_BI_Clientes_Estadias
+	FOREIGN KEY (Dim_Clie_Edad) REFERENCES Covid_20.Dimencion_Clientes_Estadias(Clie_Edad)
 
 
 ---------------------- MIGRACIOS DE DATOS DESDE EL MODELO OLTP ---------------------
@@ -59,7 +94,6 @@ INSERT INTO COVID_20.Dimencion_Tiempo (Tiempo_Anio,Tiempo_Mes)
 	SELECT cast(YEAR(Factura_Fecha) as numeric(4)), cast(MONTH(Factura_Fecha) as numeric (2))
 	FROM COVID_20.FACTURA
 	GROUP BY YEAR(Factura_Fecha), MONTH(Factura_Fecha)
-
 
 
 
@@ -102,13 +136,21 @@ Group by Empresa_RS
 
 
 ---------------------------------------------- MIGRACIOS DE LA TABLA HABITACION
-INSERT INTO COVID_20.Dimencion_Tipo_Habitacion
+INSERT INTO COVID_20.Dimencion_Tipo_Habitacion (THabitacion_Tipo,THabitacion_Cantidad_Camas ) 
+			Values ('Base Simple', 1 )
+INSERT INTO COVID_20.Dimencion_Tipo_Habitacion (THabitacion_Tipo,THabitacion_Cantidad_Camas ) 
+			Values ('Base Doble', 2)
+INSERT INTO COVID_20.Dimencion_Tipo_Habitacion (THabitacion_Tipo,THabitacion_Cantidad_Camas ) 
+			Values ('Base Triple', 3)
+INSERT INTO COVID_20.Dimencion_Tipo_Habitacion (THabitacion_Tipo,THabitacion_Cantidad_Camas ) 
+			Values ('Base Cuadruple', 4)
+INSERT INTO COVID_20.Dimencion_Tipo_Habitacion (THabitacion_Tipo,THabitacion_Cantidad_Camas ) 
+			Values ('King', 1)
 
-SELECT *
-FROM COVID_20.TIPO_HABITACION
-
-
-
+ 
 /*
-SELECT * FROM COVID_20.Dimencion_Tiempo
+	SELECT * FROM COVID_20.Dimencion_Tiempo
+	SELECT * FROM COVID_20.Dimencion_Empresa_Hotelera
+	SELECT * FROM COVID_20.Dimencion_Clientes_Estadias
+	SELECT * FROM COVID_20.Dimencion_Tipo_Habitacion
 */
