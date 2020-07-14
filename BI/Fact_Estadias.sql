@@ -2,11 +2,11 @@ USE GD1C2020
 ------------------------------------------------------LISTADOS DE DROPS
 /*
 BEGIN TRANSACTION
+	DROP TABLE [COVID_20].[Fact_Table_Estadias]
 	DROP TABLE [COVID_20].[Dimencion_Tiempo]
 	DROP TABLE [COVID_20].[Dimencion_Clientes_Estadias]
 	DROP TABLE [COVID_20].[Dimencion_Empresa_Hotelera]
-	DROP TABLE [COVID_20].[Dimencion_Tipo_Habitacion]
-	DROP TABLE [COVID_20].[Fact_Table_Estadias]
+	DROP TABLE [COVID_20].[Dimencion_Tipo_Habitacion]	
 COMMIT TRANSACTION
 */
 ------------------------------------------------------CREACIONES DE TABLAS
@@ -42,7 +42,7 @@ CREATE TABLE [COVID_20].[Fact_Table_Estadias](
 	Fact_Cantidad_Vendida int,
 	Fact_Ganancia numeric(10,2),
 	Fact_Cantidad_Camas int,
-	Fact_Cantidad_Havitaciones int,
+	Fact_Cantidad_Habitaciones int
 )
 
 ------------------------------------------------------CREACION DE LAS CLAVES PRIMARIAS (PK)
@@ -61,7 +61,7 @@ ALTER TABLE [COVID_20].[Dimencion_Tipo_Habitacion]
 	ADD CONSTRAINT PK_BI_THabitacion PRIMARY KEY (THabitacion_Tipo)
 
 ALTER TABLE [COVID_20].[Fact_Table_Estadias]
-	ADD CONSTRAINT PK_BI_Fact_Estadias PRIMARY KEY (Dim_Tiempo_Anio,Dim_Tiempo_Mes, Dim_Hotel_RS, Dim_THabitacion_Tipo,Dim_Clie_Edad)
+	ADD CONSTRAINT PK_BI_Fact_Estadias PRIMARY KEY (Dim_Tiempo_Anio ,Dim_Tiempo_Mes, Dim_Hotel_RS, Dim_Clie_Edad, Dim_THabitacion_Tipo)
 
 
 ------------------------------------------------------CREACION DE LAS CLAVES FORANEAS (FK)
@@ -148,9 +148,68 @@ INSERT INTO COVID_20.Dimencion_Tipo_Habitacion (THabitacion_Tipo,THabitacion_Can
 			Values ('King', 1)
 
  
+
+
+
+---------------------------------------------- MIGRACIOS DE LA FACT TABLE DE ESTADIAS
+ 
+	 
+	 
+	
+	 
+	
+	 
+	 
+	 
+	 
+	
+INSERT INTO COVID_20.Fact_Table_Estadias (Dim_Tiempo_Anio,
+										  Dim_Tiempo_Mes,
+										  Dim_Hotel_RS,
+										  Dim_Clie_Edad,
+										  Dim_THabitacion_Tipo,
+										  Fact_Precio_Promedio_Compra,
+										  Fact_Precio_Promedio_Venta, 
+										  Fact_Cantidad_Vendida, 
+										  Fact_Ganancia, 
+										  Fact_Cantidad_Camas, 
+										  Fact_Cantidad_Habitaciones)
+SELECT DATEPART(YEAR,F.Factura_Fecha) AS Año
+	,DATEPART(MONTH,F.Factura_Fecha) AS Mes
+	,EMP.Empresa_RS AS RS_Hotel
+	,DATEDIFF(YEAR,CLIE.Cliente_Fecha_Nac,GETDATE()) AS Edad
+	,TH.THabitacion_Descripcion AS Tipo_Habitacion
+	,AVG(E.Estadia_Costo) AS Precio_Promedio_Compra
+	,AVG(E.Estadia_Precio) AS Precio_Promedio_Venta
+	,COUNT(DISTINCT F.Factura_NRO) AS Cantidad_Vendida
+	,SUM(E.Estadia_Precio) - SUM(E.Estadia_Costo) AS Ganancia
+	,SUM(CASE WHEN TH.THabitacion_Descripcion = 'Base Simple' THEN 1
+			  WHEN TH.THabitacion_Descripcion = 'Base Doble' THEN 2
+			  WHEN TH.THabitacion_Descripcion = 'Base Triple' THEN 3
+			  WHEN TH.THabitacion_Descripcion = 'Base Cuadruple' THEN 4
+			  WHEN TH.THabitacion_Descripcion = 'King' THEN 1
+			  END) AS Cantidad_Camas
+	,COUNT(DISTINCT HAB.Habitacion_ID) AS Cantidad_Habitacion
+FROM COVID_20.FACTURA F
+INNER JOIN COVID_20.ESTADIA E ON F.Estadia_ID = E.Estadia_ID
+INNER JOIN COVID_20.COMPRA C ON C.Compra_NRO = E.Compra_NRO
+INNER JOIN COVID_20.EMPRESA EMP ON EMP.Empresa_ID = C.Empresa_ID
+INNER JOIN COVID_20.HOTEL H ON H.Hotel_ID = E.Hotel_ID
+INNER JOIN COVID_20.HABITACION HAB ON HAB.Habitacion_ID = E.Habitacion_ID AND H.Hotel_ID = HAB.Hotel_ID
+INNER JOIN COVID_20.TIPO_HABITACION TH ON TH.THabitacion_ID = HAB.THabitacion_ID
+INNER JOIN COVID_20.CLIENTE CLIE ON CLIE.Cliente_ID = F.Cliente_ID
+INNER JOIN COVID_20.SUCURSAL S ON S.Sucursal_ID = F.Sucursal_ID
+GROUP BY DATEPART(YEAR,F.Factura_Fecha)
+	,DATEPART(MONTH,F.Factura_Fecha)
+	,EMP.Empresa_RS
+	,DATEDIFF(YEAR,CLIE.Cliente_Fecha_Nac,GETDATE())
+	,TH.THabitacion_Descripcion
+order by 1 DESC,2 ASC, 3, 4, 5
+
 /*
 	SELECT * FROM COVID_20.Dimencion_Tiempo
 	SELECT * FROM COVID_20.Dimencion_Empresa_Hotelera
 	SELECT * FROM COVID_20.Dimencion_Clientes_Estadias
-	SELECT * FROM COVID_20.Dimencion_Tipo_Habitacion
+	SELECT * FROM COVID_20.Dimencion_Tipo_Habitacion	
+	SELECT * FROM COVID_20.Fact_Table_Estadias
 */
